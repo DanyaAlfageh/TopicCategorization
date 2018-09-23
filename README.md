@@ -15,8 +15,8 @@ Algorithm determines which of the two algorithms to run over the data:
 
 Provide two files to the program, which contain raw testing and training data:
 ```
-./data/sparce/training.csv (your training set goes here)
-./data/sparce/testing.csv (your testing file goes here)
+./data/sparse/training.csv (your training set goes here)
+./data/sparse/testing.csv (your testing file goes here)
 ```
 or, if your data is dense:
 ```
