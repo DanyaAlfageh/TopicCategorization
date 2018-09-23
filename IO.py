@@ -16,8 +16,17 @@ class DataIn():
            self.lines = list(temp)
            print("[Info]: Dense Matrix found for "+file+".")
        except:
+         self.create_dense_matrix()
          print("[Warning]: No Dense Matrix Found for "+file+".")
          print("[Info]: Generating dense matrix.")
+
+
+    def create_dense_matrix():
+        try:
+            exists = open('data/sparse/'+file+'.csv')
+            data = np.generatefromtxt('data/sparse/'+file+'.csv',delimiter = ',')
+        except:
+          print("[Error]: No file found at 'data/sparse/"+file+"'.")
 
 
 # A wrapper around the CSV code for
