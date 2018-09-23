@@ -16,12 +16,12 @@ class DataIn():
            self.lines = list(temp)
            print("[Info]: Dense Matrix found for "+file+".")
        except:
-         self.create_dense_matrix()
+         self.create_dense_matrix(file)
          print("[Warning]: No Dense Matrix Found for "+file+".")
          print("[Info]: Generating dense matrix.")
 
 
-    def create_dense_matrix():
+    def create_dense_matrix(self,file):
         try:
             exists = open('data/sparse/'+file+'.csv')
             data = np.generatefromtxt('data/sparse/'+file+'.csv',delimiter = ',')
