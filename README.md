@@ -1,4 +1,4 @@
-# Topic Categorization of 
+# Topic Categorization of Documents
 
 TODO: Pretty Description
 ## Running the program:
