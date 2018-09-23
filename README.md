@@ -13,10 +13,15 @@ Algorithm determines which of the two algorithms to run over the data:
 
 ## Input File structure:
 
-Provide two files to the program, which contain testing and training data:
+Provide two files to the program, which contain raw testing and training data:
 ```
 ./data/sparce/training.csv (your training set goes here)
 ./data/sparce/testing.csv (your testing file goes here)
+```
+or, if your data is dense:
+```
+./data/dense/training.csv (your training set goes here) 
+./data/dense/testing.csv (your testing file goes here)
 ```
 Inside the `training.csv` should be the following structure as a `.csv`:
 ```
