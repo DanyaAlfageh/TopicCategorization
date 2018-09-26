@@ -1,6 +1,8 @@
 import csv
 import random
 import numpy as np
+import pandas as pd
+import scipy.sparse as ss
 
 # A wrapper around the CSV code for
 # our purposes
@@ -9,25 +11,59 @@ class DataIn():
     lines = []
 
     #param dataSet -> training or testing
-    def __init__(self,file = 'training'):
-       try:
-         with open('data/dense/'+file+'.csv') as csvFile:
-           temp = csv.reader(csvFile, delimiter=',')
-           self.lines = list(temp)
-           print("[Info]: Dense Matrix found for "+file+".")
-       except:
-         self.create_dense_matrix(file)
-         print("[Warning]: No Dense Matrix Found for "+file+".")
-         print("[Info]: Generating dense matrix.")
+    def __init__(self,file = 'training', load_dense_matrix = True):
+       if load_dense_matrix:
+           self.denseMatrix = self.load_dense_matrix()
+           print('loaded dense respresentation correctly')
+           print(self.denseMatrix[0])
+       else:
+           try:
+             with open('data/dense/'+file+'.csv') as csvFile:
+               temp = csv.reader(csvFile, delimiter=',')
+               self.lines = list(temp)
+               print("[Info]: Dense Matrix found for "+file+".")
+           except:
+             self.create_dense_matrix(file)
+             print("[Warning]: No Dense Matrix Found for "+file+".")
+             print("[Info]: Generating dense matrix.")
 
 
     def create_dense_matrix(self,file):
         try:
             exists = open('data/sparse/'+file+'.csv')
-            data = np.generatefromtxt('data/sparse/'+file+'.csv',delimiter = ',')
+            #data = np.generatefromtxt('data/sparse/'+file+'.csv',delimiter = ',')
+            data = pd.read_csv('data/sparse/'+file+'.csv', sep=',', header=None, dtype=np.uint32)
+            print('finished reading csv')
+            rows = data[0]
+            cols = data[1]
+            print(data)
+            print("Testing rows ")
+            print(rows[0])
+            print('numRows: ', len(rows), ' numCols: ', len(cols))
+            sparseCoo = ss.coo_matrix(data)
+            sparse = sparseCoo.tocsr()
+            print('SUCCESS: cONVERTING FROM DATAFRAME TO SPARSE MATRIX')
+            attributes = {
+                'data': sparse.data,
+                'indices': sparse.indices,
+                'indptr': sparse.indptr,
+                'shape': sparse.shape
+            }
+            np.savez('data/dense/denseRep.npz', **attributes)
         except:
           print("[Error]: No file found at 'data/sparse/"+file+"'.")
 
+    def load_dense_matrix(self):
+        loader = np.load('data/dense/denseRep.npz')
+        args = (loader['data'], loader['indices'], loader['indptr'])
+        matrix = ss.csr_matrix(args, shape=loader['shape'])
+        return matrix
+
+    def create_training_and_validation(self):
+        indices = set(list(range(1200)))
+        validationIndicies = set(random.sample(indices, 240)) #20 percent of 1200 samples into validation set
+        trainingIndicies = indices - validationIndicies
+        print('set difference worked')
 
 # A wrapper around the CSV code for
 # our purposes
