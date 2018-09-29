@@ -38,7 +38,7 @@ class Main():
   """
   def command_line_args(self):
     argLength = len(sys.argv)
-    if(argLength == 2):
+    if(argLength == 3):
 
       #decision of which algorithm to use
       function = sys.argv[1].lower()
@@ -47,6 +47,17 @@ class Main():
       else:
         self.print_usage()
         exit(1)
+
+      #Are we going to cache the data?
+      cache = sys.argv[2].lower()
+      if(cache == 'y' or cache == 'n'):
+        if(cache == 'y'): self.cache = True
+        if(cache == 'n'): self.cache = False
+        print(self.cache)
+      else:
+        self.print_usage()
+        exit(1)
+
 
     #wrong amount of command line args.
     else:
@@ -59,8 +70,9 @@ class Main():
   """
   def print_usage(self):
     print("Usage:")
-    print("ALGORITHM")
+    print("ALGORITHM CACHE")
     print("Algorithm: 'native' (Naive Bayes) or 'regression' (Logistic Regression)")
-
+    print("CACHE: 'y' or 'n'.")
+    print("       If data set will be constant, use Y to use cached static data attributes.")
 
 main = Main()

@@ -1,4 +1,5 @@
 import csv
+import sys
 import random
 import numpy as np
 import pandas as pd
@@ -65,6 +66,9 @@ class DataIn():
         trainingIndicies = indices - validationIndicies
         print('set difference worked')
 
+
+
+
 # A wrapper around the CSV code for
 # our purposes
 class DataOut():
@@ -78,5 +82,56 @@ class DataOut():
       with open('data/prediction.csv', "w+") as csvFile:
         fileWriter = csv.writer(csvFile, delimiter=',')
         fileWriter.writerow(["id","class"]) #standard header
+        for line in self.lines:
+            fileWriter.writerow(line)
+
+
+
+class CacheIn():
+
+    cache = []
+    mode = ''
+
+    def __init__(self, mode):
+     print("Loading in "+mode+" Cache...")
+     try:
+      exists = open(mode+'/cache.csv')
+      with open(mode+'/cache.csv') as csvFile:
+        temp = csv.reader(csvFile, delimiter=',')
+        self.cache = list(temp)
+     except:
+       print("No "+mode+" Cache Found.")
+
+    def cache_exists(self):
+      if not self.cache:
+        return False
+      return True
+
+    def get_cache_value(self, key):
+      if not self.cache:
+        raise Exception('No Cache was found.')
+        exit(1)
+      for pairs in self.cache:
+       print(pairs)
+       if (pairs[0] == str(key)):
+         return pairs[1]
+      return -1
+
+
+class CacheOut():
+
+    lines = []
+    mode = ''
+    
+    def __init__(self,mode):
+      self.mode = mode
+
+    def add(self, key, value):
+        self.lines.append([key,value])
+
+    def write(self):
+      with open(self.mode+'/cache.csv', "w+") as csvFile:
+        fileWriter = csv.writer(csvFile, delimiter=',')
+        fileWriter.writerow(["key","value"]) #standard header
         for line in self.lines:
             fileWriter.writerow(line)
