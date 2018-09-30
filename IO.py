@@ -16,7 +16,7 @@ class DataIn():
        if load_dense_matrix:
            self.denseMatrix = self.load_dense_matrix()
            print('loaded dense respresentation correctly')
-           print(self.denseMatrix[0])
+           print(self.denseMatrix[1])
        else:
            try:
              with open('data/dense/'+file+'.csv') as csvFile:
@@ -122,7 +122,7 @@ class CacheOut():
 
     lines = []
     mode = ''
-    
+
     def __init__(self,mode):
       self.mode = mode
 

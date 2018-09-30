@@ -28,9 +28,12 @@ class Main():
     Working on the necessary conversion of the sparce Matrix
   """
   def prep_data(self):
-    self.trainingData = DataIn(file = 'training')
-    self.testingData = DataIn(file = 'testing')
-    self.predictionData = DataOut()
+    training = DataIn(file = 'training')
+    testing = DataIn(file = 'testing')
+    self.trainingData = training.load_dense_matrix()
+    self.testingData = testing.load_dense_matrix()
+    prediction = DataIn(file = 'testing')
+    self.predictionData = prediction
 
   """
    Verifies the command line arguments,calls for
