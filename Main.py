@@ -2,6 +2,7 @@ import sys
 from IO import DataIn,DataOut
 from Naive import NaiveBayes
 from Regression import LinearRegression
+from Vocabulary import Vocabulary
 
 """
   The main class, running the show and
@@ -16,6 +17,7 @@ class Main():
   def __init__(self):
     self.command_line_args()
     self.prep_data()
+    vocab = Vocabulary()
     print("Building ML model..")
     if (self.mode == 'naive'):
         naive = NaiveBayes(self.trainingData, self.testingData, self.predictionData)

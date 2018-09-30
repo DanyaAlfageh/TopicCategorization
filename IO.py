@@ -12,28 +12,27 @@ class DataIn():
     lines = []
 
     #param dataSet -> training or testing
-    def __init__(self,file = 'training', load_dense_matrix = True):
+    def __init__(self,file = 'training', load_dense_matrix = True, path="data/sparse/"):
        if load_dense_matrix:
            self.denseMatrix = self.load_dense_matrix()
            print('loaded dense respresentation correctly')
-           print(self.denseMatrix[1])
+           #print(self.denseMatrix[1])
        else:
            try:
-             with open('data/dense/'+file+'.csv') as csvFile:
+             with open(path+file+'.csv') as csvFile:
                temp = csv.reader(csvFile, delimiter=',')
                self.lines = list(temp)
-               print("[Info]: Dense Matrix found for "+file+".")
+               print("[Info]: File found for "+file+".")
            except:
              self.create_dense_matrix(file)
-             print("[Warning]: No Dense Matrix Found for "+file+".")
-             print("[Info]: Generating dense matrix.")
+             print("[Warning]: No file Found for "+file+".")
 
 
     def create_dense_matrix(self,file):
         try:
-            exists = open('data/sparse/'+file+'.csv')
+            exists = open(path+file+'.csv')
             #data = np.generatefromtxt('data/sparse/'+file+'.csv',delimiter = ',')
-            data = pd.read_csv('data/sparse/'+file+'.csv', sep=',', header=None, dtype=np.uint32)
+            data = pd.read_csv(path+file+'.csv', sep=',', header=None, dtype=np.uint32)
             print('finished reading csv')
             rows = data[0]
             cols = data[1]
@@ -52,7 +51,7 @@ class DataIn():
             }
             np.savez('data/dense/denseRep.npz', **attributes)
         except:
-          print("[Error]: No file found at 'data/sparse/"+file+"'.")
+          print("[Error]: No file found at '"+file+"'.")
 
     def load_dense_matrix(self):
         loader = np.load('data/dense/denseRep.npz')
@@ -66,6 +65,9 @@ class DataIn():
         trainingIndicies = indices - validationIndicies
         print('set difference worked')
 
+    #return the list version of the input data
+    def get_whole_list(self):
+      return self.lines
 
 
 
