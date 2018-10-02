@@ -21,6 +21,7 @@ class Main():
         naive = NaiveBayes(self.trainingData, self.testingData, self.predictionData)
     if (self.mode == 'regression'):
         regression = LinearRegression(self.trainingData, self.testingData, self.predictionData)
+        regression.make_delta_matrix()
     print("Prediction available in /data/prediction.csv")
 
 
