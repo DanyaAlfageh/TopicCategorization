@@ -20,9 +20,9 @@ class Main():
     vocab = Vocabulary()
     print("Building ML model..")
     if (self.mode == 'naive'):
-        naive = NaiveBayes(self.trainingData, self.testingData, self.predictionData)
+        naive = NaiveBayes(self.trainingData, self.testingData, self.predictionData, vocab)
     if (self.mode == 'regression'):
-        regression = LinearRegression(self.trainingData, self.testingData, self.predictionData)
+        regression = LinearRegression(self.trainingData, self.testingData, self.predictionData,vocab)
     print("Prediction available in /data/prediction.csv")
 
 

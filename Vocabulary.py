@@ -7,12 +7,13 @@ to be used as a virtual cache.
 class Vocabulary():
 
     vocab = [] #the vocab list itself.
+    size = 0; #How many words?
 
     def __init__(self):
         vocabIn = DataIn(file="vocabulary",load_dense_matrix=False, path="data/")
         #https://stackoverflow.com/questions/11264684/flatten-list-of-lists/11264799
         self.vocab = [val for sublist in vocabIn.get_whole_list() for val in sublist]
-
+        self.size = len(self.vocab)
     """
      Grabs the index relative to the word in the vocab list
      Adds +1 to account for ID offset in dataset.
