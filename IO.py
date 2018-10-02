@@ -57,11 +57,12 @@ class DataIn():
         loader = np.load('data/dense/denseRep.npz')
         args = (loader['data'], loader['indices'], loader['indptr'])
         matrix = ss.csr_matrix(args, shape=loader['shape'])
+        #print(matrix)
         return matrix
 
     def create_training_and_validation(self):
-        indices = set(list(range(1200)))
-        validationIndicies = set(random.sample(indices, 240)) #20 percent of 1200 samples into validation set
+        indices = set(list(range(12000)))
+        validationIndicies = set(random.sample(indices, 2400)) #20 percent of 12000 samples into validation set
         trainingIndicies = indices - validationIndicies
         print('set difference worked')
 
