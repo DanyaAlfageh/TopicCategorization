@@ -19,9 +19,9 @@ class Main():
     self.prep_data()
     print("Building ML model..")
     if (self.mode == 'naive'):
-        naive = NaiveBayes(self.trainingData, self.testingData, self.predictionData)
+        naive = NaiveBayes(self.trainingData, self.validationData, self.testingData)
     if (self.mode == 'regression'):
-        regression = LinearRegression(self.trainingData, self.testingData, self.predictionData)
+        regression = LinearRegression(self.trainingData, self.validationData, self.testingData)
         regression.make_delta_matrix()
     print("Prediction available in /data/prediction.csv")
 
@@ -31,11 +31,11 @@ class Main():
   """
   def prep_data(self):
     training = DataIn(file = 'training')
+    validation = DataIn(file = 'training')
     testing = DataIn(file = 'testing')
     self.trainingData = training.load_dense_matrix()
+    self.validationData = validation.load_dense_matrix()
     self.testingData = testing.load_dense_matrix()
-    prediction = DataIn(file = 'testing')
-    self.predictionData = prediction
 
   """
    Verifies the command line arguments,calls for

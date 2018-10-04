@@ -4,10 +4,10 @@ import scipy.sparse as ss
 
 class LinearRegression():
 
-    def __init__(self, trainingData, testingData, predictionData):
+    def __init__(self, trainingData, validationData, testingData):
         self.trainingData = trainingData
+        self.validationData = validationData
         self.testingData = testingData
-        self.predictionData = predictionData
 
 
     def make_delta_matrix(self):
