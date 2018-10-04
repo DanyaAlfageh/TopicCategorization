@@ -17,12 +17,11 @@ class Main():
   def __init__(self):
     self.command_line_args()
     self.prep_data()
-    vocab = Vocabulary()
     print("Building ML model..")
     if (self.mode == 'naive'):
-        naive = NaiveBayes(self.trainingData, self.testingData, self.predictionData, vocab)
+        naive = NaiveBayes(self.trainingData, self.testingData, self.predictionData)
     if (self.mode == 'regression'):
-        regression = LinearRegression(self.trainingData, self.testingData, self.predictionData,vocab)
+        regression = LinearRegression(self.trainingData, self.testingData, self.predictionData)
         regression.make_delta_matrix()
     print("Prediction available in /data/prediction.csv")
 
