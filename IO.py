@@ -14,9 +14,9 @@ class DataIn():
     #param dataSet -> training or testing
     def __init__(self,file = 'training', load_dense_matrix = True, path="data/sparse/"):
        if load_dense_matrix:
+           print('Loading matrix')
            self.denseMatrix = self.load_dense_matrix()
            print('loaded dense respresentation correctly')
-           #print(self.denseMatrix[1])
        else:
            try:
              with open(path+file+'.csv') as csvFile:
@@ -24,37 +24,72 @@ class DataIn():
                self.lines = list(temp)
                print("[Info]: File found for "+file+".")
            except:
-             self.create_dense_matrix(file)
-             print("[Warning]: No file Found for "+file+".")
+              print("Creating sparse matrix without ID's")
+              self.create_dense_matrix(file)
+              print("[Warning]: No file Found for "+file+".")
 
 
-    def create_dense_matrix(self,file):
+
+    def create_dense_matrix(self, file):
+        cols = list(range(61189))
+        colsToUse = cols[1:]
+        print('starting to read csv of testingData')
+        data = pd.read_csv('data/sparse/testing.csv', sep=',', header=None, dtype=np.float32, usecols=colsToUse)
+        print('finished reading csv')
+        sparseCoo = ss.coo_matrix(data)
+        sparse = sparseCoo.tocsr()
+        print('SUCCESS: cONVERTING FROM DATAFRAME TO SPARSE MATRIX')
+        attributes = {
+            'data': sparse.data,
+            'indices': sparse.indices,
+            'indptr': sparse.indptr,
+            'shape': sparse.shape
+        }
+        np.savez('data/dense/denseRepTesting.npz', **attributes)
+        print('sparse testing saved')
+
+    def create_dense_matrix_training_and_validation(self,file):
         try:
-            exists = open(path+file+'.csv')
-            #data = np.generatefromtxt('data/sparse/'+file+'.csv',delimiter = ',')
-            data = pd.read_csv(path+file+'.csv', sep=',', header=None, dtype=np.uint32)
-            print('finished reading csv')
-            rows = data[0]
-            cols = data[1]
-            print(data)
-            print("Testing rows ")
-            print(rows[0])
-            print('numRows: ', len(rows), ' numCols: ', len(cols))
-            sparseCoo = ss.coo_matrix(data)
-            sparse = sparseCoo.tocsr()
-            print('SUCCESS: cONVERTING FROM DATAFRAME TO SPARSE MATRIX')
-            attributes = {
-                'data': sparse.data,
-                'indices': sparse.indices,
-                'indptr': sparse.indptr,
-                'shape': sparse.shape
-            }
-            np.savez('data/dense/denseRep.npz', **attributes)
-        except:
+            cols = list(range(61190))
+            colsToUse = cols[1:]
+            viList = []
+            tiList = []
+            iList = []
+            vi = open('data/validationIndicies.txt', 'r')
+            for line in vi:
+                viList.append(int(line))
+            ti = open('data/trainingIndicies.txt', 'r')
+            for line1 in ti:
+                tiList.append(int(line1))
+            iList.append(viList)
+            iList.append(tiList)
+            test = 0
+            for i in iList:
+                print('starting to read csv')
+                data = pd.read_csv('data/sparse/training.csv', sep=',', header=None, dtype=np.float32, usecols=colsToUse, skiprows=i)
+                print('finished reading csv')
+                sparseCoo = ss.coo_matrix(data)
+                sparse = sparseCoo.tocsr()
+                print('SUCCESS: cONVERTING FROM DATAFRAME TO SPARSE MATRIX')
+                attributes = {
+                    'data': sparse.data,
+                    'indices': sparse.indices,
+                    'indptr': sparse.indptr,
+                    'shape': sparse.shape
+                }
+                if test == 0:
+                    name = 'Training'
+                else:
+                    name = 'Validation'
+                np.savez('data/dense/denseRep'+name+'.npz', **attributes)
+                test += 1
+
+        except Exception as e:
+          print(e)
           print("[Error]: No file found at '"+file+"'.")
 
     def load_dense_matrix(self):
-        loader = np.load('data/dense/denseRep.npz')
+        loader = np.load('data/dense/denseRepNoIDs.npz')
         args = (loader['data'], loader['indices'], loader['indptr'])
         matrix = ss.csr_matrix(args, shape=loader['shape'])
         #print(matrix)
@@ -64,6 +99,7 @@ class DataIn():
         indices = set(list(range(12000)))
         validationIndicies = set(random.sample(indices, 2400)) #20 percent of 12000 samples into validation set
         trainingIndicies = indices - validationIndicies
+
         print('set difference worked')
 
     #return the list version of the input data
@@ -76,7 +112,8 @@ class DataIn():
 # our purposes
 class DataOut():
 
-    lines = []
+    def __init__(self):
+        self.lines = []
 
     def add(self, id, classification):
         self.lines.append([id,classification])

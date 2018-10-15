@@ -3,6 +3,7 @@ from IO import DataIn,DataOut
 from Naive import NaiveBayes
 from Regression import LinearRegression
 from Vocabulary import Vocabulary
+from Confusion import ConfusionMatrix
 
 """
   The main class, running the show and
@@ -23,7 +24,8 @@ class Main():
         naive = NaiveBayes(self.trainingData, self.testingData, self.predictionData)
     if (self.mode == 'regression'):
         regression = LinearRegression(self.trainingData, self.testingData, self.predictionData)
-        regression.make_delta_matrix()
+        regression.classifyData(fileName ='weightsLR0.0118PT0.038iters6000', validation = True)
+        regression.gradient_descent(.0119, .033, 6000)
     print("Prediction available in /data/prediction.csv")
 
 
