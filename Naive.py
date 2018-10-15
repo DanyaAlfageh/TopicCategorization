@@ -10,7 +10,7 @@ class NaiveBayes():
   vocabListLength = -1;
   alphaMinusOne = -1;
 
-  def __init__(self, trainingData, validationData, testingData):
+  def __init__(self, trainingData, validationData, testingData, naiveBayesMatrix):
         #One time overhead computation
         if(NaiveBayes.vocabListLength == -1):
             vocab = Vocabulary()
@@ -23,6 +23,8 @@ class NaiveBayes():
         self.columns = trainingData.shape[1] #Words - 1
         self.trainingRows = trainingData.shape[0] #classifications -1
         self.testingRows = testingData.shape[0]
+        self.naiveBayesMatrix = naiveBayesMatrix
+        #print(naiveBayesMatrix.getcol(naiveBayesMatrix.shape[1]-1).data)
         self.MLE = dict()
         self.calc_mle()
 
@@ -41,3 +43,14 @@ class NaiveBayes():
   def get_MAP(self, x):
         for j in range(0,self.trainingRows,1):
           row = self.trainingData.getrow(j).data
+
+
+class MAP():
+
+  def __init__(self, classOfDoc, alphaMinusOne, totalWords,VocabListLength,matrix):
+        self.classOfDoc = classOfDoc
+        self.alphaMinusOne = alphaMinusOne
+        self.totalWords = totalWords
+        self.VocabListLength = VocabListLength
+        self.matrix = matrix
+        self.denominator = totalWords + (alphaMinusOne * vocabListLength)

@@ -75,6 +75,19 @@ class DataIn():
         }
         np.savez('data/dense/class/'+str(id)+'.npz', **attributes)
 
+    def create_naive_bayes_matrix(self):
+      fullBayesMatrix = self.load_single_dense_matrix(1)
+      for x in range(2,21):
+          ss.vstack([fullBayesMatrix,self.load_single_dense_matrix(x)])
+      attributes = {
+        'data': fullBayesMatrix.data,
+        'indices': fullBayesMatrix.indices,
+        'indptr': fullBayesMatrix.indptr,
+        'shape': fullBayesMatrix.shape
+      }
+      np.savez('data/dense/class/full.npz', **attributes)
+
+
     def delete_row_lil(self,mat, i):
       mat.rows = np.delete(mat.rows, i)
       mat.data = np.delete(mat.data, i)
@@ -90,6 +103,13 @@ class DataIn():
 
     def load_single_dense_matrix(self,id):
         loader = np.load('data/dense/class/'+str(id)+'.npz')
+        args = (loader['data'], loader['indices'], loader['indptr'])
+        matrix = ss.csr_matrix(args, shape=loader['shape'])
+        #print(matrix)
+        return matrix
+
+    def load_naive_bayes_matrix(self):
+        loader = np.load('data/dense/class/full.npz')
         args = (loader['data'], loader['indices'], loader['indptr'])
         matrix = ss.csr_matrix(args, shape=loader['shape'])
         #print(matrix)

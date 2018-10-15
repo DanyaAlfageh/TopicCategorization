@@ -19,7 +19,7 @@ class Main():
     self.prep_data()
     print("Building ML model..")
     if (self.mode == 'naive'):
-        naive = NaiveBayes(self.trainingData, self.validationData, self.testingData)
+        naive = NaiveBayes(self.trainingData, self.validationData, self.testingData,self.naiveBayesMatrix)
     if (self.mode == 'regression'):
         regression = LinearRegression(self.trainingData, self.validationData, self.testingData)
         regression.make_delta_matrix()
@@ -37,6 +37,7 @@ class Main():
     #for x in range(1,21):
         #training.create_single_dense_matrix(x)
     self.trainingData = training.load_dense_matrix()
+    self.naiveBayesMatrix = training.load_naive_bayes_matrix()
     self.validationData = validation.load_dense_matrix()
     self.testingData = testing.load_dense_matrix()
 
@@ -46,7 +47,7 @@ class Main():
   """
   def command_line_args(self):
     argLength = len(sys.argv)
-    if(argLength == 3):
+    if(argLength == 2):
 
       #decision of which algorithm to use
       function = sys.argv[1].lower()
@@ -55,17 +56,6 @@ class Main():
       else:
         self.print_usage()
         exit(1)
-
-      #Are we going to cache the data?
-      cache = sys.argv[2].lower()
-      if(cache == 'y' or cache == 'n'):
-        if(cache == 'y'): self.cache = True
-        if(cache == 'n'): self.cache = False
-        print(self.cache)
-      else:
-        self.print_usage()
-        exit(1)
-
 
     #wrong amount of command line args.
     else:
@@ -80,7 +70,5 @@ class Main():
     print("Usage:")
     print("ALGORITHM CACHE")
     print("Algorithm: 'native' (Naive Bayes) or 'regression' (Logistic Regression)")
-    print("CACHE: 'y' or 'n'.")
-    print("       If data set will be constant, use Y to use cached static data attributes.")
 
 main = Main()
