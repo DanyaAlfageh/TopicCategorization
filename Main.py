@@ -18,10 +18,9 @@ class Main():
   def __init__(self):
     self.command_line_args()
     self.prep_data()
-    vocab = Vocabulary()
     print("Building ML model..")
     if (self.mode == 'naive'):
-        naive = NaiveBayes(self.trainingData, self.testingData, self.predictionData)
+        naive = NaiveBayes(self.trainingData, self.validationData, self.testingData,self.naiveBayesMatrix)
     if (self.mode == 'regression'):
         regression = LinearRegression(self.trainingData, self.testingData, self.predictionData)
         regression.classifyData(fileName ='weightsLR0.0118PT0.038iters6000', validation = True)
@@ -34,11 +33,15 @@ class Main():
   """
   def prep_data(self):
     training = DataIn(file = 'training')
+    validation = DataIn(file = 'training')
     testing = DataIn(file = 'testing')
+    #todo remove me
+    #for x in range(1,21):
+        #training.create_single_dense_matrix(x)
     self.trainingData = training.load_dense_matrix()
+    self.naiveBayesMatrix = training.load_naive_bayes_matrix()
+    self.validationData = validation.load_dense_matrix()
     self.testingData = testing.load_dense_matrix()
-    prediction = DataIn(file = 'testing')
-    self.predictionData = prediction
 
   """
    Verifies the command line arguments,calls for
@@ -46,7 +49,7 @@ class Main():
   """
   def command_line_args(self):
     argLength = len(sys.argv)
-    if(argLength == 3):
+    if(argLength == 2):
 
       #decision of which algorithm to use
       function = sys.argv[1].lower()
@@ -55,17 +58,6 @@ class Main():
       else:
         self.print_usage()
         exit(1)
-
-      #Are we going to cache the data?
-      cache = sys.argv[2].lower()
-      if(cache == 'y' or cache == 'n'):
-        if(cache == 'y'): self.cache = True
-        if(cache == 'n'): self.cache = False
-        print(self.cache)
-      else:
-        self.print_usage()
-        exit(1)
-
 
     #wrong amount of command line args.
     else:
@@ -80,7 +72,5 @@ class Main():
     print("Usage:")
     print("ALGORITHM CACHE")
     print("Algorithm: 'native' (Naive Bayes) or 'regression' (Logistic Regression)")
-    print("CACHE: 'y' or 'n'.")
-    print("       If data set will be constant, use Y to use cached static data attributes.")
 
 main = Main()
