@@ -9,19 +9,13 @@ class LinearRegression():
 
 <<<<<<< HEAD
     def __init__(self, trainingData = [], testingData =[], predictionData=[]):
-=======
-    def __init__(self, trainingData, validationData, testingData):
->>>>>>> d09c894d9abb8040b8b827f1bc8ff9b8f5763ca6
         self.trainingData = trainingData
-        self.validationData = validationData
         self.testingData = testingData
-<<<<<<< HEAD
         self.predictionData = predictionData
         loader = np.load('data/dense/denseRepTraining.npz')
         args = (loader['data'], loader['indices'], loader['indptr'])
         self.trainingMatrix = ss.csr_matrix(args, shape=loader['shape'])
-=======
->>>>>>> d09c894d9abb8040b8b827f1bc8ff9b8f5763ca6
+
 
         loaderVal = np.load('data/dense/denseRepValidation.npz')
         argsVal = (loaderVal['data'], loaderVal['indices'], loaderVal['indptr'])
