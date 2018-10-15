@@ -33,6 +33,7 @@ class DataIn():
             exists = open(path+file+'.csv')
             #data = np.generatefromtxt('data/sparse/'+file+'.csv',delimiter = ',')
             data = pd.read_csv(path+file+'.csv', sep=',', header=None, dtype=np.uint32)
+
             print('finished reading csv')
             rows = data[0]
             cols = data[1]
@@ -53,8 +54,42 @@ class DataIn():
         except:
           print("[Error]: No file found at '"+file+"'.")
 
+    def create_single_dense_matrix(self,id):
+        final = []
+        matrix = self.load_dense_matrix().tolil()
+        classes = matrix.getcol(matrix.shape[1]-1)
+        for x in reversed(range(matrix.shape[0])):
+            if(classes[x] != id):
+                self.delete_row_lil(matrix, x)
+        matrix = matrix.tocsr()
+        for x in range(matrix.shape[1]-1):
+          final.append(matrix.getcol(x).sum())
+        final.append(id)
+        preConvert = np.array(final)
+        matrix = ss.csr_matrix(preConvert)
+        attributes = {
+          'data': matrix.data,
+          'indices': matrix.indices,
+          'indptr': matrix.indptr,
+          'shape': matrix.shape
+        }
+        np.savez('data/dense/class/'+str(id)+'.npz', **attributes)
+
+    def delete_row_lil(self,mat, i):
+      mat.rows = np.delete(mat.rows, i)
+      mat.data = np.delete(mat.data, i)
+      mat._shape = (mat._shape[0] - 1, mat._shape[1])
+
+
     def load_dense_matrix(self):
         loader = np.load('data/dense/denseRep.npz')
+        args = (loader['data'], loader['indices'], loader['indptr'])
+        matrix = ss.csr_matrix(args, shape=loader['shape'])
+        #print(matrix)
+        return matrix
+
+    def load_single_dense_matrix(self,id):
+        loader = np.load('data/dense/class/'+str(id)+'.npz')
         args = (loader['data'], loader['indices'], loader['indptr'])
         matrix = ss.csr_matrix(args, shape=loader['shape'])
         #print(matrix)

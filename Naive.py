@@ -1,3 +1,5 @@
+import numpy as np
+from scipy import sparse
 from collections import Counter
 from multiprocessing import Pool
 from Vocabulary import Vocabulary
@@ -23,12 +25,6 @@ class NaiveBayes():
         self.testingRows = testingData.shape[0]
         self.MLE = dict()
         self.calc_mle()
-
-        pool = Pool(100)
-        pool.map(self.get_MAP, [x for x in range(self.testingRows)])
-
-
-
 
 
   def calc_mle(self):
