@@ -7,7 +7,6 @@ from IO import DataOut
 
 class LinearRegression():
 
-<<<<<<< HEAD
     def __init__(self, trainingData = [], testingData =[], predictionData=[]):
         self.trainingData = trainingData
         self.testingData = testingData
