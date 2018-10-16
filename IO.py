@@ -109,8 +109,8 @@ class DataIn():
 
     def create_naive_bayes_matrix(self):
       fullBayesMatrix = self.load_single_dense_matrix(1)
-      for x in range(2,21):
-          ss.vstack([fullBayesMatrix,self.load_single_dense_matrix(x)])
+      for x in range(1,21):
+          fullBayesMatrix = ss.vstack([fullBayesMatrix,self.load_single_dense_matrix(x)])
       attributes = {
         'data': fullBayesMatrix.data,
         'indices': fullBayesMatrix.indices,
@@ -144,7 +144,7 @@ class DataIn():
         loader = np.load('data/dense/class/full.npz')
         args = (loader['data'], loader['indices'], loader['indptr'])
         matrix = ss.csr_matrix(args, shape=loader['shape'])
-        #print(matrix)
+        print(matrix)
         return matrix
 
     def create_training_and_validation(self):
