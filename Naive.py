@@ -7,16 +7,7 @@ from IO import CacheIn, CacheOut
 
 class NaiveBayes():
 
-  vocabListLength = -1;
-  alphaMinusOne = -1;
-
   def __init__(self, trainingData, validationData, testingData, naiveBayesMatrix):
-        #One time overhead computation
-        if(NaiveBayes.vocabListLength == -1):
-            vocab = Vocabulary()
-            NaiveBayes.vocabListLength = vocab.length
-            NaiveBayes.alphaMinusOne = 1/vocab.length
-
         self.trainingData = trainingData
         self.validationData = validationData
         self.testingData = testingData
@@ -24,33 +15,44 @@ class NaiveBayes():
         self.trainingRows = trainingData.shape[0] #classifications -1
         self.testingRows = testingData.shape[0]
         self.naiveBayesMatrix = naiveBayesMatrix
-        #print(naiveBayesMatrix.getcol(naiveBayesMatrix.shape[1]-1).data)
-        self.MLE = dict()
-        self.calc_mle()
+        self.MLE = self.calc_mle()
+        print(self.MLE)
+        map = Map_Matrix(naiveBayesMatrix)
 
 
   def calc_mle(self):
+      MLE = dict()
       Y = Counter(self.trainingData.getcol(self.columns-1).data)
       total = len(self.trainingData.getcol(self.columns-1).data)
       for k in Y:
-        MLE = Y.get(k)/total
-        self.MLE[k] = MLE
+        MLEk = Y.get(k)/total
+        MLE[k] = MLEk
+      return MLE
 
   def get_mle(self, Y):
       self.trainingData.getcol(self.columns-1).data
       return self.MLE[Y]
 
-  def get_MAP(self, x):
-        for j in range(0,self.trainingRows,1):
-          row = self.trainingData.getrow(j).data
 
 
-class MAP():
 
-  def __init__(self, classOfDoc, alphaMinusOne, totalWords,VocabListLength,matrix):
-        self.classOfDoc = classOfDoc
-        self.alphaMinusOne = alphaMinusOne
-        self.totalWords = totalWords
-        self.VocabListLength = VocabListLength
-        self.matrix = matrix
-        self.denominator = totalWords + (alphaMinusOne * vocabListLength)
+class Map_Matrix():
+
+  vocabListLength = -1;
+  alphaMinusOne = -1;
+
+  def __init__(self, naiveBayesMatrix):
+    #One time overhead computation
+    if(Map_Matrix.vocabListLength == -1):
+      vocab = Vocabulary()
+      Map_Matrix.vocabListLength = vocab.length
+      Map_Matrix.alphaMinusOne = 1/vocab.length #(1/|v|)
+
+    #self.denominator = totalWords + (Map_Matrix.alphaMinusOne * Map_Matrix.vocabListLength)
+    alphaMatrix = np.full((21,61190), Map_Matrix.alphaMinusOne) #(a -1)
+    self.numerator = naiveBayesMatrix + alphaMatrix #(count of Xi in Yk)+(a-1)
+    denominatorStatic = Map_Matrix.alphaMinusOne * Map_Matrix.vocabListLength # (a-1)*(length of vocab list)
+    for x in range(self.numerator.shape[0]):
+        denominatorDynamic = self.numerator[x,:].sum() - (self.numerator[x,0] + self.numerator[x,self.numerator.shape[0]-1]) #(total words in Yk)
+        self.numerator[x,:] *= (1/(denominatorDynamic + denominatorStatic))
+    self.MAPMatrix = self.numerator
