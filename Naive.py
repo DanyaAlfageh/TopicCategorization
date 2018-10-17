@@ -18,8 +18,12 @@ class NaiveBayes():
         self.naiveBayesMatrix = naiveBayesMatrix
         self.MLE = self.calc_mle()
         print(self.MLE)
-        map = Map_Matrix(naiveBayesMatrix)
-        summation = Summation(map)
+        mapMatrix = Map_Matrix(naiveBayesMatrix)
+        map = mapMatrix.logMatrix
+        print(map)
+        for x in range (1,21):
+            currentRow = map[x,:]
+
 
 
 
@@ -37,10 +41,6 @@ class NaiveBayes():
       return self.MLE[Y]
 
 
-class Summation():
-
-    def __init__(self, map):
-        logMatrix = 1/math.log(2)* np.log(map.MAPMatrix) # (log2(P(Xi|Yk)))
 
 
 
@@ -66,4 +66,9 @@ class Map_Matrix():
         self.numerator[x,0] = 1
         self.numerator[x,self.numerator.shape[1]-1] = (x+1)
     self.MAPMatrix = self.numerator
-    self.MAPMatrix = np.zeros(0)
+    print(self.MAPMatrix)
+    self.MAPMatrix = np.delete(self.MAPMatrix,0,1)
+    self.MAPMatrix = np.delete(self.MAPMatrix,self.MAPMatrix.shape[1]-1,1)
+    print(self.MAPMatrix)
+    self.logMatrix = np.log2(self.MAPMatrix) # (log2(P(Xi|Yk)))
+    print(self.MAPMatrix)

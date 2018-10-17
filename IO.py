@@ -144,7 +144,6 @@ class DataIn():
         loader = np.load('data/dense/class/full.npz')
         args = (loader['data'], loader['indices'], loader['indptr'])
         matrix = ss.csr_matrix(args, shape=loader['shape'])
-        print(matrix)
         return matrix
 
     def create_training_and_validation(self):
