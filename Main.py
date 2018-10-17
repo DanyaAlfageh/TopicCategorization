@@ -42,9 +42,6 @@ class Main():
     training = DataIn(file = 'training')
     validation = DataIn(file = 'training')
     testing = DataIn(file = 'testing')
-    #todo remove me
-    #for x in range(1,21):
-        #training.create_single_dense_matrix(x)
     self.trainingData = training.load_dense_matrix()
     self.naiveBayesMatrix = training.load_naive_bayes_matrix()
     self.validationData = validation.load_dense_matrix()
