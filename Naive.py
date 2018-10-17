@@ -1,3 +1,4 @@
+import math
 import numpy as np
 from scipy import sparse
 from collections import Counter
@@ -18,6 +19,8 @@ class NaiveBayes():
         self.MLE = self.calc_mle()
         print(self.MLE)
         map = Map_Matrix(naiveBayesMatrix)
+        summation = Summation(map)
+
 
 
   def calc_mle(self):
@@ -33,6 +36,11 @@ class NaiveBayes():
       self.trainingData.getcol(self.columns-1).data
       return self.MLE[Y]
 
+
+class Summation():
+
+    def __init__(self, map):
+        logMatrix = 1/math.log(2)* np.log(map.MAPMatrix) # (log2(P(Xi|Yk)))
 
 
 
@@ -55,4 +63,7 @@ class Map_Matrix():
     for x in range(self.numerator.shape[0]):
         denominatorDynamic = self.numerator[x,:].sum() - (self.numerator[x,0] + self.numerator[x,self.numerator.shape[0]-1]) #(total words in Yk)
         self.numerator[x,:] *= (1/(denominatorDynamic + denominatorStatic))
+        self.numerator[x,0] = 1
+        self.numerator[x,self.numerator.shape[1]-1] = (x+1)
     self.MAPMatrix = self.numerator
+    self.MAPMatrix = np.zeros(0)
