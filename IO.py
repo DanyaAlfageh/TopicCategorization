@@ -18,6 +18,7 @@ class DataIn():
            self.denseMatrix = self.load_dense_matrix()
            print('loaded dense respresentation correctly')
        else:
+           self.create_dense_matrix_training_and_validation(file)
            try:
              with open(path+file+'.csv') as csvFile:
                temp = csv.reader(csvFile, delimiter=',')
@@ -33,8 +34,8 @@ class DataIn():
     def create_dense_matrix(self, file):
         cols = list(range(61189))
         colsToUse = cols[1:]
-        print('starting to read csv of testingData')
-        data = pd.read_csv('data/sparse/testing.csv', sep=',', header=None, dtype=np.float32, usecols=colsToUse)
+        print('starting to read csv of trainingData')
+        data = pd.read_csv('data/sparse/training.csv', sep=',', header=None, dtype=np.float64, usecols=colsToUse)
         print('finished reading csv')
         sparseCoo = ss.coo_matrix(data)
         sparse = sparseCoo.tocsr()
@@ -65,8 +66,8 @@ class DataIn():
             iList.append(tiList)
             test = 0
             for i in iList:
-                print('starting to read csv')
-                data = pd.read_csv('data/sparse/training.csv', sep=',', header=None, dtype=np.float32, usecols=colsToUse, skiprows=i)
+                print('starting to read csv for training and validation')
+                data = pd.read_csv('data/sparse/training.csv', sep=',', header=None, dtype=np.float64, usecols=colsToUse, skiprows=i)
                 print('finished reading csv')
                 sparseCoo = ss.coo_matrix(data)
                 sparse = sparseCoo.tocsr()
@@ -164,14 +165,14 @@ class DataIn():
 # our purposes
 class DataOut():
 
-    def __init__(self):
+    def __init__(self, fileName= 'data/prediction.csv'):
         self.lines = []
-
+        self.fileName = fileName
     def add(self, id, classification):
         self.lines.append([id,classification])
 
     def write(self):
-      with open('data/prediction.csv', "w+") as csvFile:
+      with open(self.fileName, "w+") as csvFile:
         fileWriter = csv.writer(csvFile, delimiter=',')
         fileWriter.writerow(["id","class"]) #standard header
         for line in self.lines:
