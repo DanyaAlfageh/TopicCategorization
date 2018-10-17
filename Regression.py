@@ -4,6 +4,7 @@ import scipy.sparse as ss
 import datetime
 from Confusion import ConfusionMatrix
 from IO import DataOut
+import os
 
 class LinearRegression():
 
@@ -72,7 +73,7 @@ class LinearRegression():
         #X matrix with normalization
         print(str(datetime.datetime.now()))
         colList = list(range(61188))
-        ones = np.ones(9600, dtype=np.float32)
+        ones = np.ones(9600, dtype=np.float64)
         x = ss.hstack((ones[:,None], self.trainingMatrix[:, colList]))
         xCols = x.tocsc()
         self.maxes = xCols.max(axis=0).toarray()
@@ -83,6 +84,7 @@ class LinearRegression():
 
     def make_weight_matrix(self):
         randWeights = np.random.random_sample((20, self.n+1))
+        zeros = np.zeros((20, self.n+1))
         weightFrame = pd.DataFrame(randWeights)
         sparseWeights = ss.coo_matrix(weightFrame)
         return sparseWeights.tocsr()
@@ -103,7 +105,7 @@ class LinearRegression():
         expProduct = np.expm1(product)
 
         replace = ss.csr_matrix(expProduct)
-        ones = np.ones(numOnes, dtype=np.float32)
+        ones = np.ones(numOnes, dtype=np.float64)
         rowsToKeep = list(range(19))
         addOnes = ss.vstack((replace[rowsToKeep, :], ones[None, :]))
         modifiedCsr = ss.csr_matrix(addOnes)
@@ -125,11 +127,11 @@ class LinearRegression():
         if useValidation:
             yC = ss.csc_matrix(self.validationMatrix)
             self.yClasses = yC[:, -1].toarray()
-            ones = np.ones(yC.shape[0], dtype=np.float32)
+            ones = np.ones(yC.shape[0], dtype=np.float64)
             y = ss.hstack((ones[:,None], self.validationMatrix[:, colList] ))
         else:
             yC = ss.csc_matrix(self.testingMatrix)
-            ones = np.ones(yC.shape[0], dtype=np.float32)
+            ones = np.ones(yC.shape[0], dtype=np.float64)
             y= ss.hstack((ones[:,None], self.testingMatrix ))
 
         yCols = y.tocsc()
@@ -139,14 +141,26 @@ class LinearRegression():
     def gradient_descent(self, learningRate, penaltyTerm, maxIterations):
         print('Starting GD with ', maxIterations, 'iterations. At: ', str(datetime.datetime.now()))
         iters = 0
-
-        while iters <= maxIterations:
+        val0 = 0
+        shouldContinue = True
+        while iters <= maxIterations and shouldContinue:
             if (iters % 1000) == 0:
                 print('On step', iters,  'At:', str(datetime.datetime.now()))
                 self.classifyData()
-
+            """
+            if iters % 100 == 0:
+                val1 = self.classifyData()
+                if val1 - val0 >= 0.0:
+                    val0 = val1
+                    bestweights = self.w
+                else:
+                    self.w = bestweights
+                    learningRate = learningRate *.5
+            """
             probMat = self.make_prob_matrix()
-            wt = self.w + learningRate*(((self.deltaMatrix - probMat) *self.x) - penaltyTerm*self.w)
+            diff = self.deltaMatrix - probMat
+            #wt = self.w + learningRate*(((self.deltaMatrix - probMat) *self.x) - penaltyTerm*self.w)
+            wt = self.w + learningRate*((diff.dot(self.x) - penaltyTerm*self.w))
             self.w = ss.csr_matrix(wt)
             iters += 1
 
@@ -158,14 +172,14 @@ class LinearRegression():
             'indptr': self.w.indptr,
             'shape': self.w.shape
         }
-        np.savez('weights/weights'+'LR'+str(learningRate)+'PT' +str(penaltyTerm)+'iters'+str(maxIterations)+'.npz', **attributes)
-        print('Finsihed GD with ', maxIterations, 'iterations. At: ',str(datetime.datetime.now()))
+        np.savez('weights/weights'+'LR'+str(learningRate)+'PT' +str(penaltyTerm)+'iters'+str(iters)+'.npz', **attributes)
+        print('Finsihed GD with ', iters, 'iterations. At: ',str(datetime.datetime.now()))
 
     def classifyData(self, fileName = None, validation = True, createConfusion = False):
         weights = None
         if fileName !=None:
             #load weights here
-            loader = np.load('weights/' + fileName + '.npz')
+            loader = np.load('weights/' + fileName)
             args = (loader['data'], loader['indices'], loader['indptr'])
             weights = ss.csr_matrix(args, shape=loader['shape'])
         else:
@@ -191,8 +205,11 @@ class LinearRegression():
                         correctlyClassified += 1
                 percentCorrect = correctlyClassified/len(self.yClasses)
                 print('percentCorrect:', percentCorrect)
+
             if createConfusion:
                 confusion = ConfusionMatrix(pred, act)
+            return percentCorrect
+
         else:
             matrix = self.testingNormalized
             classifer = self.make_prob_matrix(useForGD =False, useValidation =False, weights =weights)
@@ -203,3 +220,11 @@ class LinearRegression():
             for i in range(classification.shape[1]):
                 pred.add(i+12001, int(classification[0][i]))
             pred.write()
+
+    def find_score_for_all_computed_weights(self):
+        calculatedWeights = os.listdir('weights')
+        toFile = DataOut('data/LinRegAccuracies.csv')
+        for weight in calculatedWeights:
+            percentCorrect = self.classifyData(fileName=weight)
+            toFile.add(weight, percentCorrect)
+        toFile.write()

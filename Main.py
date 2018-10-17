@@ -22,9 +22,16 @@ class Main():
     if (self.mode == 'naive'):
         naive = NaiveBayes(self.trainingData, self.validationData, self.testingData,self.naiveBayesMatrix)
     if (self.mode == 'regression'):
-        regression = LinearRegression(self.trainingData, self.testingData, self.predictionData)
-        regression.classifyData(fileName ='weightsLR0.0118PT0.038iters6000', validation = True)
-        regression.gradient_descent(.0119, .033, 6000)
+        vals = [0.008, 0.009, 0.011]
+        for lr in vals:
+            regression = LinearRegression()
+            #regression.classifyData(fileName ='weightsLR0.0105PT0.015iters15001.npz', validation = False)
+            regression.gradient_descent(lr, .033, 8000)
+        pts = [0.032, 0.034, 0.036, 0.04]
+        for pt in pts:
+            regression = LinearRegression()
+            regression.gradient_descent(0.0118, pt, 6000)
+        #regression.find_score_for_all_computed_weights()
     print("Prediction available in /data/prediction.csv")
 
 
