@@ -32,7 +32,11 @@ class ConfusionMatrix():
         plt.setp(ax.get_xticklabels(), rotation =45, ha='right', rotation_mode='anchor')
         for i in range(20):
             for j in range(20):
-                text = ax.text(j, i, self.matrix[i, j], ha='center', va='center', color='w')
+                if i == j:
+                    color = 'b'
+                else:
+                    color = 'w'
+                text = ax.text(j, i, self.matrix[i, j], ha='center', va='center', color=color)
 
         ax.set_title('ConfusionMatrix')
         plt.show()
