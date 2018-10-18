@@ -170,7 +170,8 @@ class DataOut():
         self.lines.append([id,classification])
 
     def write(self):
-      with open('data/prediction.csv', "w+") as csvFile:
+      print(len(self.lines))
+      with open('data/NBprediction.csv', "w+") as csvFile:
         fileWriter = csv.writer(csvFile, delimiter=',')
         fileWriter.writerow(["id","class"]) #standard header
         for line in self.lines:

@@ -4,7 +4,7 @@ from scipy import sparse
 from collections import Counter
 from multiprocessing import Pool
 from Vocabulary import Vocabulary
-from IO import CacheIn, CacheOut
+from IO import CacheIn, CacheOut, DataOut
 
 class NaiveBayes():
 
@@ -15,14 +15,23 @@ class NaiveBayes():
         self.columns = trainingData.shape[1] #Words - 1
         self.trainingRows = trainingData.shape[0] #classifications -1
         self.testingRows = testingData.shape[0]
+
+        out = DataOut()
         self.naiveBayesMatrix = naiveBayesMatrix
         self.MLE = self.calc_mle()
-        print(self.MLE)
         mapMatrix = Map_Matrix(naiveBayesMatrix)
-        map = mapMatrix.logMatrix
-        print(map)
-        for x in range (1,21):
-            currentRow = map[x,:]
+        map = mapMatrix.MAPMatrix.transpose()
+        MLEMatrix = self.get_mle_matrix()
+        print(testingData.shape[0])
+        for x in range (0,testingData.shape[0]):
+            currentRow = testingData.getrow(x).todense()
+            currentRow = np.delete(currentRow,0,1)
+            results = (currentRow * map)
+            classification = np.argmax(results)
+            out.add(12001+x,classification)
+        out.write()
+
+
 
 
 
@@ -36,9 +45,12 @@ class NaiveBayes():
         MLE[k] = MLEk
       return MLE
 
-  def get_mle(self, Y):
-      self.trainingData.getcol(self.columns-1).data
-      return self.MLE[Y]
+  def get_mle_matrix(self):
+      matrix = np.zeros((20,1))
+      for x in range(1,21):
+          matrix[x-1] = self.MLE[x]
+      print(matrix)
+      return matrix
 
 
 
@@ -66,9 +78,7 @@ class Map_Matrix():
         self.numerator[x,0] = 1
         self.numerator[x,self.numerator.shape[1]-1] = (x+1)
     self.MAPMatrix = self.numerator
-    print(self.MAPMatrix)
     self.MAPMatrix = np.delete(self.MAPMatrix,0,1)
     self.MAPMatrix = np.delete(self.MAPMatrix,self.MAPMatrix.shape[1]-1,1)
-    print(self.MAPMatrix)
-    self.logMatrix = np.log2(self.MAPMatrix) # (log2(P(Xi|Yk)))
-    print(self.MAPMatrix)
+    self.logMatrix = np.log2(self.MAPMatrix) # (log2(P(Xi|Yk)))\
+    self.MAPMatrix = self.logMatrix
