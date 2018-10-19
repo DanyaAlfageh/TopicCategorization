@@ -4,7 +4,7 @@ from scipy import sparse
 from collections import Counter
 from multiprocessing import Pool
 from Vocabulary import Vocabulary
-from IO import CacheIn, CacheOut, DataOut
+from IO import DataOut
 
 """
 Uses the naive bayes classifier to determine the most accurate Classification
@@ -26,7 +26,6 @@ class NaiveBayes():
 
         #MLE -> log2(P(Y))
         MLEMatrix = self.get_mle_matrix()
-        print(self.trainingData.getcol(self.trainingData.shape[1]-1).data.astype(int).tolist())
 
         #MAP -> log2(P(X|Y))
         mapMatrix = Map_Matrix(naiveBayesMatrix)
@@ -48,8 +47,6 @@ class NaiveBayes():
   def calc_mle(self):
       MLE = dict()
       data = self.trainingData.getcol(self.trainingData.shape[1]-1).data
-      print("DATA")
-      print(data)
       Y = Counter(data)
       total = len(data)
       for k in Y:

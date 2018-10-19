@@ -40,7 +40,7 @@ class Main():
     #  training.create_single_dense_matrix(x)
     #training.create_naive_bayes_matrix()
     self.naiveBayesMatrix = training.load_naive_bayes_matrix()
-    self.validationData = validation.load_dense_matrix()
+    self.validationData = validation.load_validation_matrix()
     self.testingData = testing.load_testing_matrix()
 
   """

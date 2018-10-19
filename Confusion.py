@@ -27,6 +27,7 @@ class ConfusionMatrix():
     """
     def make_confusion_matrix(self):
         for pred, act in zip(self.yPredicted, self.yActual):
+            print("Here")
             self.matrix[pred-1][act-1] += 1
 
     """
@@ -55,7 +56,7 @@ class ConfusionMatrix():
         plt.show()
 
     """
-    Calculates the percentage of examples that were misclassified as each class. 
+    Calculates the percentage of examples that were misclassified as each class.
     """
     def calculate_error_percentage(self):
         for i in range(20):

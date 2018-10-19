@@ -4,6 +4,7 @@ import random
 import numpy as np
 import pandas as pd
 import scipy.sparse as ss
+from collections import Counter
 from Confusion import ConfusionMatrix
 
 # A wrapper around the CSV code for
@@ -161,6 +162,13 @@ class DataIn():
         #print(matrix)
         return matrix
 
+    def load_validation_matrix(self):
+        loader = np.load('data/dense/denseRepValidation.npz')
+        args = (loader['data'], loader['indices'], loader['indptr'])
+        matrix = ss.csr_matrix(args, shape=loader['shape'])
+        #print(matrix)
+        return matrix
+
     def load_single_dense_matrix(self,id):
         loader = np.load('data/dense/class/'+str(id)+'.npz')
         args = (loader['data'], loader['indices'], loader['indptr'])
@@ -193,7 +201,6 @@ class DataOut():
         self.lines.append([id,classification])
 
     def write(self):
-      print(len(self.lines))
       with open(self.fileName, "w+") as csvFile:
         fileWriter = csv.writer(csvFile, delimiter=',')
         fileWriter.writerow(["id","class"]) #standard header
@@ -202,53 +209,3 @@ class DataOut():
 
     def generate_confusion_matrix(self, correctList):
         confusion = ConfusionMatrix(self.lines, correctList)
-
-
-class CacheIn():
-
-    cache = []
-    mode = ''
-
-    def __init__(self, mode):
-     print("Loading in "+mode+" Cache...")
-     try:
-      exists = open(mode+'/cache.csv')
-      with open(mode+'/cache.csv') as csvFile:
-        temp = csv.reader(csvFile, delimiter=',')
-        self.cache = list(temp)
-     except:
-       print("No "+mode+" Cache Found.")
-
-    def cache_exists(self):
-      if not self.cache:
-        return False
-      return True
-
-    def get_cache_value(self, key):
-      if not self.cache:
-        raise Exception('No Cache was found.')
-        exit(1)
-      for pairs in self.cache:
-       print(pairs)
-       if (pairs[0] == str(key)):
-         return pairs[1]
-      return -1
-
-
-class CacheOut():
-
-    lines = []
-    mode = ''
-
-    def __init__(self,mode):
-      self.mode = mode
-
-    def add(self, key, value):
-        self.lines.append([key,value])
-
-    def write(self):
-      with open(self.mode+'/cache.csv', "w+") as csvFile:
-        fileWriter = csv.writer(csvFile, delimiter=',')
-        fileWriter.writerow(["key","value"]) #standard header
-        for line in self.lines:
-            fileWriter.writerow(line)
