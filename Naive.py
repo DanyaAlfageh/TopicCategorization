@@ -28,14 +28,12 @@ class NaiveBayes():
 
         #MAP -> log2(P(X|Y))
         mapMatrix = Map_Matrix(naiveBayesMatrix)
-        mapMatrix = mapMatrix.get().transpose() #so we can use linear algebra to multipy
-
+        mapMatrix = mapMatrix.get().transpose()#so we can use linear algebra to multipy
 
         #Classification -> argmax[MLE + MAP]
         for x in range (0,testingData.shape[0]):
             currentRow = testingData.getrow(x)
-            results = (currentRow * mapMatrix)
-            #print(results)
+            results = currentRow.dot(mapMatrix)
             classification = np.argmax(results)
             out.add(x+12001,classification)
         out.write()
@@ -55,17 +53,14 @@ class NaiveBayes():
       matrix = np.zeros((20,1))
       for x in range(1,21):
           matrix[x-1] = MLE[x]
-      return matrix
+      return np.log2(matrix)
 
 class Map_Matrix():
 
   def __init__(self, naiveBayesMatrix):
+    print(naiveBayesMatrix)
     naiveBayesMatrix = naiveBayesMatrix.todense()
     print("Here")
-    print(naiveBayesMatrix)
-    print(naiveBayesMatrix.shape[1])
-    naiveBayesMatrix = np.delete(naiveBayesMatrix,0,1)
-    #naiveBayesMatrix = np.delete(naiveBayesMatrix,naiveBayesMatrix.shape[1]-1,1)
 
     v = 0 #total Vocabulary words
     for x in range(0,naiveBayesMatrix.shape[0]):
@@ -73,10 +68,11 @@ class Map_Matrix():
 
     #B = 1/v
     B = 1/v
-
-    vocab = Vocabulary()
-    vocabListLength = vocab.length #(length of vocab list)
     alphaMinusOne = B #(a-1)
+
+    #(length of vocab list)
+    vocab = Vocabulary()
+    vocabListLength = vocab.length
 
     # (a-1)*(length of vocab list)
     denominatorStatic = alphaMinusOne * vocabListLength
@@ -91,6 +87,7 @@ class Map_Matrix():
 
     #log2(P(Xi|Yk))
     self.mapmatrix = np.log2(numerator)
+    print(self.mapmatrix)
 
   def get(self):
       return self.mapmatrix
