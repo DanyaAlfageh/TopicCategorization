@@ -4,6 +4,7 @@ import random
 import numpy as np
 import pandas as pd
 import scipy.sparse as ss
+from Confusion import ConfusionMatrix
 
 # A wrapper around the CSV code for
 # our purposes
@@ -191,6 +192,8 @@ class DataOut():
         for line in self.lines:
             fileWriter.writerow(line)
 
+    def generate_confusion_matrix(self, correctList):
+        confusion = ConfusionMatrix(self.lines, correctList)
 
 
 class CacheIn():

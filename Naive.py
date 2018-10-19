@@ -13,18 +13,20 @@ data to be classified.
 """
 class NaiveBayes():
 
+  validating = True;
   """
 
   """
   def __init__(self, trainingData, validationData, testingData, naiveBayesMatrix):
         self.trainingData = trainingData
-        self.validationData = validationData
         self.testingData = testingData
+        if(NaiveBayes.validating): self.testingData = validationData
         self.naiveBayesMatrix = naiveBayesMatrix
         out = DataOut()
 
         #MLE -> log2(P(Y))
         MLEMatrix = self.get_mle_matrix()
+        print(self.trainingData.getcol(self.trainingData.shape[1]-1).data.astype(int).tolist())
 
         #MAP -> log2(P(X|Y))
         mapMatrix = Map_Matrix(naiveBayesMatrix)
@@ -36,11 +38,18 @@ class NaiveBayes():
             results = currentRow.dot(mapMatrix)
             classification = np.argmax(results)
             out.add(x+12001,classification)
-        out.write()
+        if(NaiveBayes.validating):
+           correct = self.trainingData.getcol(self.trainingData.shape[1]-1).data.astype(int).tolist()
+           out.generate_confusion_matrix(correct)
+        else:
+           out.write()
+
 
   def calc_mle(self):
       MLE = dict()
       data = self.trainingData.getcol(self.trainingData.shape[1]-1).data
+      print("DATA")
+      print(data)
       Y = Counter(data)
       total = len(data)
       for k in Y:
@@ -58,9 +67,7 @@ class NaiveBayes():
 class Map_Matrix():
 
   def __init__(self, naiveBayesMatrix):
-    print(naiveBayesMatrix)
     naiveBayesMatrix = naiveBayesMatrix.todense()
-    print("Here")
 
     v = 0 #total Vocabulary words
     for x in range(0,naiveBayesMatrix.shape[0]):
@@ -87,7 +94,6 @@ class Map_Matrix():
 
     #log2(P(Xi|Yk))
     self.mapmatrix = np.log2(numerator)
-    print(self.mapmatrix)
 
   def get(self):
       return self.mapmatrix
