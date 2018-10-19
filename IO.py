@@ -4,6 +4,7 @@ import random
 import numpy as np
 import pandas as pd
 import scipy.sparse as ss
+from Confusion import ConfusionMatrix
 
 # A wrapper around the CSV code for
 # our purposes
@@ -101,15 +102,15 @@ class DataIn():
 
     def create_single_dense_matrix(self,id):
         final = []
-        matrix = self.load_dense_matrix().tolil()
+        matrix = self.load_training_matrix().tolil()
         classes = matrix.getcol(matrix.shape[1]-1)
         for x in reversed(range(matrix.shape[0])):
             if(classes[x] != id):
                 self.delete_row_lil(matrix, x)
         matrix = matrix.tocsr()
-        for x in range(matrix.shape[1]-1):
+        for x in range(0,matrix.shape[1]-1):
           final.append(matrix.getcol(x).sum())
-        final.append(id)
+        #final.append(id)
         preConvert = np.array(final)
         matrix = ss.csr_matrix(preConvert)
         attributes = {
@@ -141,6 +142,20 @@ class DataIn():
 
     def load_dense_matrix(self):
         loader = np.load('data/dense/denseRepNoIDs.npz')
+        args = (loader['data'], loader['indices'], loader['indptr'])
+        matrix = ss.csr_matrix(args, shape=loader['shape'])
+        #print(matrix)
+        return matrix
+
+    def load_training_matrix(self):
+        loader = np.load('data/dense/denseRepTraining.npz')
+        args = (loader['data'], loader['indices'], loader['indptr'])
+        matrix = ss.csr_matrix(args, shape=loader['shape'])
+        #print(matrix)
+        return matrix
+
+    def load_testing_matrix(self):
+        loader = np.load('data/dense/denseRepTesting.npz')
         args = (loader['data'], loader['indices'], loader['indptr'])
         matrix = ss.csr_matrix(args, shape=loader['shape'])
         #print(matrix)
@@ -178,12 +193,15 @@ class DataOut():
         self.lines.append([id,classification])
 
     def write(self):
+      print(len(self.lines))
       with open(self.fileName, "w+") as csvFile:
         fileWriter = csv.writer(csvFile, delimiter=',')
         fileWriter.writerow(["id","class"]) #standard header
         for line in self.lines:
             fileWriter.writerow(line)
 
+    def generate_confusion_matrix(self, correctList):
+        confusion = ConfusionMatrix(self.lines, correctList)
 
 
 class CacheIn():
