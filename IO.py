@@ -18,7 +18,6 @@ class DataIn():
            self.denseMatrix = self.load_dense_matrix()
            print('loaded dense respresentation correctly')
        else:
-           self.create_dense_matrix_training_and_validation(file)
            try:
              with open(path+file+'.csv') as csvFile:
                temp = csv.reader(csvFile, delimiter=',')
@@ -30,13 +29,18 @@ class DataIn():
               print("[Warning]: No file Found for "+file+".")
 
 
-
+    """
+    Creates a dense representation of the testing set
+    """
     def create_dense_matrix(self, file):
+        #Excluding first column, which containes ids
         cols = list(range(61189))
         colsToUse = cols[1:]
         print('starting to read csv of trainingData')
-        data = pd.read_csv('data/sparse/training.csv', sep=',', header=None, dtype=np.float64, usecols=colsToUse)
+        #Reading in a pandas dataFrame
+        data = pd.read_csv('data/sparse/testing.csv', sep=',', header=None, dtype=np.float64, usecols=colsToUse)
         print('finished reading csv')
+        #Converting to csr matrix
         sparseCoo = ss.coo_matrix(data)
         sparse = sparseCoo.tocsr()
         print('SUCCESS: cONVERTING FROM DATAFRAME TO SPARSE MATRIX')
@@ -46,25 +50,33 @@ class DataIn():
             'indptr': sparse.indptr,
             'shape': sparse.shape
         }
+        #Writing out newly created representation to file
         np.savez('data/dense/denseRepTesting.npz', **attributes)
         print('sparse testing saved')
 
+    """
+    Creating the dense represntations of the validation and training sets
+    """
     def create_dense_matrix_training_and_validation(self,file):
         try:
             cols = list(range(61190))
             colsToUse = cols[1:]
+            #Index list for validation and training sets
             viList = []
             tiList = []
             iList = []
+            #Adding validation indices to list
             vi = open('data/validationIndicies.txt', 'r')
             for line in vi:
                 viList.append(int(line))
+            #Adding training indices to list
             ti = open('data/trainingIndicies.txt', 'r')
             for line1 in ti:
                 tiList.append(int(line1))
             iList.append(viList)
             iList.append(tiList)
             test = 0
+            #Creating both the trainng and validation dense representations
             for i in iList:
                 print('starting to read csv for training and validation')
                 data = pd.read_csv('data/sparse/training.csv', sep=',', header=None, dtype=np.float64, usecols=colsToUse, skiprows=i)
@@ -147,21 +159,16 @@ class DataIn():
         matrix = ss.csr_matrix(args, shape=loader['shape'])
         return matrix
 
-    def create_training_and_validation(self):
-        indices = set(list(range(12000)))
-        validationIndicies = set(random.sample(indices, 2400)) #20 percent of 12000 samples into validation set
-        trainingIndicies = indices - validationIndicies
-
-        print('set difference worked')
-
     #return the list version of the input data
     def get_whole_list(self):
       return self.lines
 
 
 
-# A wrapper around the CSV code for
-# our purposes
+"""
+A wrapper around the CSV code for our purposes.
+Writes output to given file name.
+"""
 class DataOut():
 
     def __init__(self, fileName= 'data/prediction.csv'):
