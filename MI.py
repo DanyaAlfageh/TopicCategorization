@@ -1,7 +1,13 @@
 import math
 from Naive import Map_Matrix, MLE_Matrix
 
+"""
+ Designed to use the MLE and MAP methods from naiveBayes
+ to determine the Mutual Information between the probablity
+ of a word and the probability of a word given a class
 
+ Used to determine the top 100 unique words
+ """
 class MutualInformation():
 
 
@@ -29,7 +35,9 @@ class MutualInformation():
         with open('ranking.txt', 'w') as fp:
           fp.write('\n'.join('%s %s' % x for x in final))
 
-
+"""
+Determines the P(x)
+"""
 class ProbablityX():
 
     def __init__(self,naiveBayesMatrix):

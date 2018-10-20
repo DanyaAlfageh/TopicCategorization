@@ -9,14 +9,12 @@ from IO import DataOut
 """
 Uses the naive bayes classifier to determine the most accurate Classification
 of data given prior example classifications and information about the newest
-data to be classified.
+data to be classified. Uses linear algebra and a flattening of data to assist if
+in a speedy calculation.
 """
 class NaiveBayes():
 
-  validating = True;
-  """
-
-  """
+  validating = False;
   def __init__(self, trainingData, validationData, testingData, naiveBayesMatrix, beta = -1):
         self.trainingData = trainingData
         if(NaiveBayes.validating): self.testingData = validationData
@@ -34,7 +32,7 @@ class NaiveBayes():
         #Classification -> argmax[MLE + MAP]
         for x in range (0,self.testingData.shape[0]):
             currentRow = self.testingData.getrow(x).todense()
-            currentRow = np.delete(currentRow,self.testingData.shape[1]-1,1)
+            if(NaiveBayes.validating):currentRow = np.delete(currentRow,self.testingData.shape[1]-1,1)
             results = currentRow.dot(mapMatrix)
             classification = np.argmax(results)
             out.add(x+12001,classification)
@@ -44,6 +42,10 @@ class NaiveBayes():
         else:
            out.write()
 
+"""
+Constructs a matrix that holds the P(Y) relative
+to Y in that column.
+"""
 class MLE_Matrix():
 
   def __init__(self,data):
@@ -68,6 +70,11 @@ class MLE_Matrix():
   def get_log_mle_matrix(self):
       return np.log2(self.get_mle_matrix())
 
+"""
+Calculates an MAP matrix that determines the P(X|Y)
+for any X Y combination, then sets them in the corresponding Matrix
+position where the original X was.
+"""
 class Map_Matrix():
 
   def __init__(self, naiveBayesMatrix,beta = -1):
