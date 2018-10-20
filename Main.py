@@ -1,5 +1,6 @@
 import sys
 from IO import DataIn,DataOut
+from MI import MutualInformation
 from Naive import NaiveBayes
 from Regression import LinearRegression
 from Vocabulary import Vocabulary
@@ -26,9 +27,11 @@ class Main():
         #regression.classifyData(fileName ='weightsLR0.0105PT0.015iters17001.npz', validation =True, createConfusion =True)
         #regression.find_score_for_all_computed_weights()
     if (self.mode == 'beta'):
-        #for x in self.frange(.00001, 1.1, .2):
-            #naive = NaiveBayes(self.trainingData, self.validationData, self.testingData,self.naiveBayesMatrix, beta = x)
+        for x in self.frange(.00001, 1, .2):
+            naive = NaiveBayes(self.trainingData, self.validationData, self.testingData,self.naiveBayesMatrix, beta = x)
         naive = NaiveBayes(self.trainingData, self.validationData, self.testingData,self.naiveBayesMatrix, beta = 1)
+    if (self.mode == 'mi'):
+        MI = MutualInformation(self.trainingData, self.naiveBayesMatrix)
     print("Prediction available in /data/prediction.csv")
 
 
@@ -56,7 +59,7 @@ class Main():
 
       #decision of which algorithm to use
       function = sys.argv[1].lower()
-      if(function == 'regression' or function == 'naive' or function == 'beta'):
+      if(function == 'regression' or function == 'naive' or function == 'beta' or function == 'mi'):
         self.mode = function
       else:
         self.print_usage()

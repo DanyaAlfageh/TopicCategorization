@@ -56,7 +56,7 @@ class MLE_Matrix():
         MLE[k] = MLEk
       self.MLE = MLE
 
-  def get_mle(self, id):
+  def get(self, id):
       return self.MLE[id]
 
   def get_mle_matrix(self):
@@ -70,7 +70,7 @@ class MLE_Matrix():
 
 class Map_Matrix():
 
-  def __init__(self, naiveBayesMatrix,beta):
+  def __init__(self, naiveBayesMatrix,beta = -1):
     naiveBayesMatrix = naiveBayesMatrix.todense()
 
     v = 0 #total Vocabulary words
