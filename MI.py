@@ -6,10 +6,13 @@ class MutualInformation():
 
 
     def __init__(self, data, naiveBayesMatrix):
+        text_file = open("data/vocabulary.csv", "r")
+        lines = text_file.readlines()
+        text_file.close()
         final = []
         mleP = MLE_Matrix(data)
-        map = Map_Matrix(naiveBayesMatrix)
-        mapP = map.get()
+        mapR = Map_Matrix(naiveBayesMatrix)
+        mapP = mapR.get()
         px = ProbablityX(naiveBayesMatrix);
         for y in range(0,naiveBayesMatrix.shape[1]):
             IG = 0
@@ -20,8 +23,9 @@ class MutualInformation():
               pxy = abs(mapP[x,y])* mle
               temp =math.log(pxy / (px.get(y) * mle))
               IG = IG + temp
-            final.append((y,IG))
+            final.append((lines[y],IG))
             print(y)
+        final = sorted(final, key=lambda x: x[1])
         with open('ranking.txt', 'w') as fp:
           fp.write('\n'.join('%s %s' % x for x in final))
 
