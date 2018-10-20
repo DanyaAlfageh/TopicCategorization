@@ -19,27 +19,27 @@ class NaiveBayes():
   """
   def __init__(self, trainingData, validationData, testingData, naiveBayesMatrix):
         self.trainingData = trainingData
-        self.testingData = testingData
         if(NaiveBayes.validating): self.testingData = validationData
+        else: self.testingData = testingData
         self.naiveBayesMatrix = naiveBayesMatrix
         out = DataOut()
 
         #MLE -> log2(P(Y))
         MLEMatrix = self.get_mle_matrix()
-
         #MAP -> log2(P(X|Y))
         mapMatrix = Map_Matrix(naiveBayesMatrix)
         mapMatrix = mapMatrix.get().transpose()#so we can use linear algebra to multipy
 
         #Classification -> argmax[MLE + MAP]
-        for x in range (0,testingData.shape[0]):
-            currentRow = testingData.getrow(x)
+        for x in range (0,self.testingData.shape[0]):
+            currentRow = self.testingData.getrow(x).todense()
+            currentRow = np.delete(currentRow,self.testingData.shape[1]-1,1)
             results = currentRow.dot(mapMatrix)
             classification = np.argmax(results)
             out.add(x+12001,classification)
         if(NaiveBayes.validating):
-           correct = self.trainingData.getcol(self.trainingData.shape[1]-1).data.astype(int).tolist()
-           out.generate_confusion_matrix(correct)
+           correct = self.testingData.getcol(self.testingData.shape[1]-1).data.astype(int).tolist()
+           out.generate_confusion_matrix([x for x in correct])
         else:
            out.write()
 

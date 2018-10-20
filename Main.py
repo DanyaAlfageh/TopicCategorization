@@ -33,14 +33,13 @@ class Main():
   """
   def prep_data(self):
     training = DataIn(file = 'training')
-    validation = DataIn(file = 'training')
     testing = DataIn(file = 'testing')
     self.trainingData = training.load_training_matrix()
     #for x in range(1,21):
     #  training.create_single_dense_matrix(x)
     #training.create_naive_bayes_matrix()
     self.naiveBayesMatrix = training.load_naive_bayes_matrix()
-    self.validationData = validation.load_validation_matrix()
+    self.validationData = testing.load_validation_matrix()
     self.testingData = testing.load_testing_matrix()
 
   """
