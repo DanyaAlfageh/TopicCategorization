@@ -17,53 +17,60 @@ class NaiveBayes():
   """
 
   """
-  def __init__(self, trainingData, validationData, testingData, naiveBayesMatrix):
+  def __init__(self, trainingData, validationData, testingData, naiveBayesMatrix, beta = -1):
         self.trainingData = trainingData
-        self.testingData = testingData
         if(NaiveBayes.validating): self.testingData = validationData
+        else: self.testingData = testingData
         self.naiveBayesMatrix = naiveBayesMatrix
         out = DataOut()
 
         #MLE -> log2(P(Y))
-        MLEMatrix = self.get_mle_matrix()
-
+        MLEMatrix = MLE_Matrix(trainingData)
+        MLEMatrix = MLEMatrix.get_log_mle_matrix()
         #MAP -> log2(P(X|Y))
-        mapMatrix = Map_Matrix(naiveBayesMatrix)
+        mapMatrix = Map_Matrix(naiveBayesMatrix,beta)
         mapMatrix = mapMatrix.get().transpose()#so we can use linear algebra to multipy
 
         #Classification -> argmax[MLE + MAP]
-        for x in range (0,testingData.shape[0]):
-            currentRow = testingData.getrow(x)
+        for x in range (0,self.testingData.shape[0]):
+            currentRow = self.testingData.getrow(x).todense()
+            currentRow = np.delete(currentRow,self.testingData.shape[1]-1,1)
             results = currentRow.dot(mapMatrix)
             classification = np.argmax(results)
             out.add(x+12001,classification)
         if(NaiveBayes.validating):
-           correct = self.trainingData.getcol(self.trainingData.shape[1]-1).data.astype(int).tolist()
-           out.generate_confusion_matrix(correct)
+           correct = self.testingData.getcol(self.testingData.shape[1]-1).data.astype(int).tolist()
+           out.generate_confusion_matrix([x for x in correct])
         else:
            out.write()
 
+class MLE_Matrix():
 
-  def calc_mle(self):
+  def __init__(self,data):
       MLE = dict()
-      data = self.trainingData.getcol(self.trainingData.shape[1]-1).data
+      data = data.getcol(data.shape[1]-1).data
       Y = Counter(data)
       total = len(data)
       for k in Y:
         MLEk = Y.get(k)/total
         MLE[k] = MLEk
-      return MLE
+      self.MLE = MLE
+
+  def get(self, id):
+      return self.MLE[id]
 
   def get_mle_matrix(self):
-      MLE = self.calc_mle()
       matrix = np.zeros((20,1))
       for x in range(1,21):
-          matrix[x-1] = MLE[x]
+          matrix[x-1] = self.MLE[x]
       return np.log2(matrix)
+
+  def get_log_mle_matrix(self):
+      return np.log2(self.get_mle_matrix())
 
 class Map_Matrix():
 
-  def __init__(self, naiveBayesMatrix):
+  def __init__(self, naiveBayesMatrix,beta = -1):
     naiveBayesMatrix = naiveBayesMatrix.todense()
 
     v = 0 #total Vocabulary words
@@ -71,7 +78,8 @@ class Map_Matrix():
         v = v + naiveBayesMatrix[x,:].sum()
 
     #B = 1/v
-    B = 1/v
+    B = beta
+    if(beta == -1): B = 1/v
     alphaMinusOne = B #(a-1)
 
     #(length of vocab list)

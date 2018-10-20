@@ -196,9 +196,11 @@ class DataOut():
 
     def __init__(self, fileName= 'data/prediction.csv'):
         self.lines = []
+        self.validate = []
         self.fileName = fileName
     def add(self, id, classification):
         self.lines.append([id,classification])
+        self.validate.append(classification)
 
     def write(self):
       with open(self.fileName, "w+") as csvFile:
@@ -208,4 +210,4 @@ class DataOut():
             fileWriter.writerow(line)
 
     def generate_confusion_matrix(self, correctList):
-        confusion = ConfusionMatrix(self.lines, correctList)
+        confusion = ConfusionMatrix(self.validate, correctList)

@@ -58,6 +58,8 @@ class ConfusionMatrix():
     Calculates the percentage of examples that were misclassified as each class.
     """
     def calculate_error_percentage(self):
+        grandErrors = 0
+        grandTotal = 0
         for i in range(20):
             errors = 0
             total = 0
@@ -67,3 +69,6 @@ class ConfusionMatrix():
                 if i != j:
                     errors += matVal
             print('Row', i, 'has error percentage of', errors/total, 'with total', total)
+            grandErrors = grandErrors + errors
+            grandTotal = grandTotal + total
+        print('The classifier has a total error percentage of', grandErrors/grandTotal,)   
