@@ -24,7 +24,12 @@ class Main():
         naive = NaiveBayes(self.trainingData, self.validationData, self.testingData,self.naiveBayesMatrix)
     if (self.mode == 'regression'):
         regression = LinearRegression()
-        #regression.classifyData(fileName ='weightsLR0.0105PT0.015iters17001.npz', validation =True, createConfusion =True)
+        #Proof that GD works
+        regression.gradient_descent(.008, .018, 6000)
+        #Loading best example and testing on validation and producing a confusion matrix
+        regression.classifyData(fileName ='weightsLR0.0105PT0.015iters17001.npz', validation =True, createConfusion =True)
+        #Creating a prediction that could be submitted to Kaggle
+        regression.classifyData(fileName = 'weightsLR0.0105PT0.015iters17001.npz', validation = False, createConfusion = False)
         #regression.find_score_for_all_computed_weights()
     if (self.mode == 'beta'):
         for x in self.frange(.00001, 1, .2):
