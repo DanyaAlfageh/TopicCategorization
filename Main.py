@@ -23,7 +23,12 @@ class Main():
         naive = NaiveBayes(self.trainingData, self.validationData, self.testingData,self.naiveBayesMatrix)
     if (self.mode == 'regression'):
         regression = LinearRegression()
-        #regression.classifyData(fileName ='weightsLR0.0105PT0.015iters17001.npz', validation =True, createConfusion =True)
+        #Proof that GD works
+        regression.gradient_descent(.008, .018, 6000)
+        #Loading best example and testing on validation and producing a confusion matrix
+        regression.classifyData(fileName ='weightsLR0.0105PT0.015iters17001.npz', validation =True, createConfusion =True)
+        #Creating a prediction that could be submitted to Kaggle
+        regression.classifyData(fileName = 'weightsLR0.0105PT0.015iters17001.npz', validation = False, createConfusion = False)
         #regression.find_score_for_all_computed_weights()
     print("Prediction available in /data/prediction.csv")
 
@@ -40,7 +45,7 @@ class Main():
     #  training.create_single_dense_matrix(x)
     #training.create_naive_bayes_matrix()
     self.naiveBayesMatrix = training.load_naive_bayes_matrix()
-    self.validationData = validation.load_validation_matrix()
+    self.validationData = validation.load_dense_matrix()
     self.testingData = testing.load_testing_matrix()
 
   """

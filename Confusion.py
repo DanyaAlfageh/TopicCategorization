@@ -27,7 +27,6 @@ class ConfusionMatrix():
     """
     def make_confusion_matrix(self):
         for pred, act in zip(self.yPredicted, self.yActual):
-            print("Here")
             self.matrix[pred-1][act-1] += 1
 
     """
