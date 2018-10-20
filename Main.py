@@ -25,6 +25,10 @@ class Main():
         regression = LinearRegression()
         #regression.classifyData(fileName ='weightsLR0.0105PT0.015iters17001.npz', validation =True, createConfusion =True)
         #regression.find_score_for_all_computed_weights()
+    if (self.mode == 'beta'):
+        #for x in self.frange(.00001, 1.1, .2):
+            #naive = NaiveBayes(self.trainingData, self.validationData, self.testingData,self.naiveBayesMatrix, beta = x)
+        naive = NaiveBayes(self.trainingData, self.validationData, self.testingData,self.naiveBayesMatrix, beta = 1)
     print("Prediction available in /data/prediction.csv")
 
 
@@ -52,7 +56,7 @@ class Main():
 
       #decision of which algorithm to use
       function = sys.argv[1].lower()
-      if(function == 'regression' or function == 'naive'):
+      if(function == 'regression' or function == 'naive' or function == 'beta'):
         self.mode = function
       else:
         self.print_usage()
@@ -62,6 +66,13 @@ class Main():
     else:
       self.print_usage()
       exit(1)
+
+
+  def frange(self,start, stop, step):
+    i = start
+    while i < stop:
+      yield i
+      i += step
 
   """
     prints the usage for command line arguments
